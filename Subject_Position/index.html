@@ -1,1 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subject Position: Nouns & Noun Equivalents Quiz</title>
+  <style>
+    /* Google Fonts Import */
+    @import url('https://fonts.googleapis.com/css2?family=Cambria&family=Comic+Neue:wght@400;700&family=Lora:ital,wght@0,500;0,600;1,400&family=Nunito:wght@400;600;700&display=swap');
 
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --primary-navy: #1e293b;
+      --accent-blue: #2563eb;
+      --accent-light: #eff6ff;
+      --text-dark: #334155;
+      --text-muted: #64748b;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #14532d;
+      --incorrect-bg: #fee2e2;
+      --incorrect-border: #dc2626;
+      --incorrect-text: #7f1d1d;
+      --border-color: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Lora', 'Cambria', Georgia, serif;
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding: 30px 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .quiz-container {
+      background-color: var(--card-bg);
+      max-width: 780px;
+      width: 100%;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 35px 40px;
+      border: 1px solid var(--border-color);
+    }
+
+    header {
+      text-align: center;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: var(--primary-navy);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-family: 'Comic Neue', 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    /* Progress & Score Bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 10px;
+      background-color: #e2e8f0;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 20%;
+      background-color: var(--accent-blue);
+      transition: width 0.4s ease;
+    }
+
+    /* Question Card */
+    .question-card {
+      margin-bottom: 25px;
+    }
+
+    .question-tag {
+      display: inline-block;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      background-color: var(--accent-light);
+      color: var(--accent-blue);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--primary-navy);
+      margin-bottom: 20px;
+    }
+
+    .blank-space {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 2px dashed var(--accent-blue);
+      color: var(--accent-blue);
+      text-align: center;
+      font-weight: bold;
+      padding: 0 8px;
+    }
+
+    /* Options List */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .option-btn {
+      font-family: 'Lora', 'Cambria', serif;
+      background-color: #f8fafc;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 1.05rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--accent-blue);
+      background-color: var(--accent-light);
+    }
+
+    .option-btn.correct {
+      background-color: var(--correct-bg);
+      border-color: var(--correct-border);
+      color: var(--correct-text);
+      font-weight: 600;
+    }
+
+    .option-btn.incorrect {
+      background-color: var(--incorrect-bg);
+      border-color: var(--incorrect-border);
+      color: var(--incorrect-text);
+    }
+
+    .option-btn[disabled] {
+      cursor: default;
+    }
+
+    /* Feedback & Explanation Box */
+    .explanation-box {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .explanation-box.correct {
+      background-color: var(--correct-bg);
+      border: 1px solid var(--correct-border);
+      color: var(--correct-text);
+    }
+
+    .explanation-box.incorrect {
+      background-color: var(--incorrect-bg);
+      border: 1px solid var(--incorrect-border);
+      color: var(--incorrect-text);
+    }
+
+    /* Control Buttons */
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .next-btn {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      background-color: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: none;
+    }
+
+    .next-btn:hover {
+      background-color: #1d4ed8;
+    }
+
+    /* Final Score Screen */
+    .results-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+
+    .results-screen h2 {
+      font-size: 2rem;
+      color: var(--primary-navy);
+      margin-bottom: 10px;
+    }
+
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background-color: var(--accent-light);
+      border: 4px solid var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 25px auto;
+      font-family: 'Nunito', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .restart-btn {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      background-color: var(--primary-navy);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .restart-btn:hover {
+      background-color: #334155;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .quiz-container {
+        padding: 25px 20px;
+      }
+      header h1 {
+        font-size: 1.4rem;
+      }
+      .question-text {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    <header>
+      <h1>Nouns & Noun Equivalents in Subject Position</h1>
+      <p>Evaluate which syntactic unit properly functions as the subject</p>
+    </header>
+
+    <!-- Quiz Core Screen -->
+    <div id="quiz-screen">
+      <div class="status-bar">
+        <span id="question-number">Question 1 of 5</span>
+        <span id="score-counter">Score: 0 / 5</span>
+      </div>
+
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="question-card">
+        <span class="question-tag" id="target-category">Noun Category</span>
+        <div class="question-text" id="question-text">
+          <!-- Question inserted via JS -->
+        </div>
+
+        <div class="options-grid" id="options-container">
+          <!-- Options inserted via JS -->
+        </div>
+
+        <div class="explanation-box" id="explanation-box">
+          <!-- Feedback inserted via JS -->
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Final Results Screen -->
+    <div class="results-screen" id="results-screen">
+      <h2>Quiz Completed!</h2>
+      <p style="color: var(--text-muted); font-size: 1.05rem;">Here is your performance summary:</p>
+      
+      <div class="score-circle" id="final-score">0/5</div>
+      
+      <p id="feedback-message" style="margin-bottom: 25px; font-size: 1.1rem; color: var(--text-dark);"></p>
+      
+      <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        category: "1. Noun Phrase (Head Noun + Modifiers)",
+        question: "______ in the new linguistics research building was praised by the academic evaluation board.",
+        options: [
+          "The state-of-the-art laboratory",
+          "Thoroughly analyze data",
+          "Because the equipment was new",
+          "Efficiently operating"
+        ],
+        answer: 0,
+        explanation: "<b>Correct!</b> 'The state-of-the-art laboratory' is a complete Noun Phrase (Determiner + Modifiers + Head Noun) that functions as the nominal subject performing/receiving the main verb action."
+      },
+      {
+        category: "2. Pronoun (Nominative Case)",
+        question: "______ reviewed all the student essay submissions before deciding the course grades.",
+        options: [
+          "Him",
+          "They",
+          "Them",
+          "Their"
+        ],
+        answer: 1,
+        explanation: "<b>Correct!</b> 'They' is a personal pronoun in the nominative (subject) case. 'Him' and 'them' are objective forms, and 'their' is possessive."
+      },
+      {
+        category: "3. Gerund Phrase (Verb-ing as Noun)",
+        question: "______ across diverse languages helps researchers understand underlying cognitive structures.",
+        options: [
+          "To acoustic phonetics",
+          "Comparing phonetic structures",
+          "Compare phonetic structures",
+          "When comparing structures"
+        ],
+        answer: 1,
+        explanation: "<b>Correct!</b> 'Comparing phonetic structures' is a Gerund Phrase (V-ing functioning as a noun phrase) serving as the singular subject of the main verb 'helps'."
+      },
+      {
+        category: "4. Infinitive Phrase (To + Base Verb)",
+        question: "______ a comprehensive curriculum requires balancing theoretical knowledge with practical skills.",
+        options: [
+          "To design",
+          "Designed",
+          "Design",
+          "Having designed"
+        ],
+        answer: 0,
+        explanation: "<b>Correct!</b> 'To design' is a To-Infinitive functioning as a nominal subject expressing an abstract action or goal."
+      },
+      {
+        category: "5. Noun Clause (Dependent Clause as Subject)",
+        question: "______ artificial intelligence will transform higher education remains a central subject of academic debate.",
+        options: [
+          "Whether",
+          "Although",
+          "In spite of",
+          "Whenever"
+        ],
+        answer: 0,
+        explanation: "<b>Correct!</b> 'Whether' introduces a Noun Clause ('Whether artificial intelligence will transform higher education') that functions entirely as the grammatical subject of the main verb 'remains'."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    // DOM Elements
+    const questionNumberEl = document.getElementById("question-number");
+    const scoreCounterEl = document.getElementById("score-counter");
+    const progressBarEl = document.getElementById("progress-bar");
+    const targetCategoryEl = document.getElementById("target-category");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainerEl = document.getElementById("options-container");
+    const explanationBoxEl = document.getElementById("explanation-box");
+    const nextBtnEl = document.getElementById("next-btn");
+    const quizScreenEl = document.getElementById("quiz-screen");
+    const resultsScreenEl = document.getElementById("results-screen");
+    const finalScoreEl = document.getElementById("final-score");
+    const feedbackMessageEl = document.getElementById("feedback-message");
+
+    function loadQuestion() {
+      answered = false;
+      const current = quizData[currentQuestion];
+
+      // Update Header Info
+      questionNumberEl.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+      scoreCounterEl.textContent = `Score: ${score} / ${quizData.length}`;
+      progressBarEl.style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+      
+      targetCategoryEl.textContent = current.category;
+
+      // Insert question with highlighted blank
+      const parts = current.question.split("______");
+      questionTextEl.innerHTML = `${parts[0]}<span class="blank-space" id="blank-target">?</span>${parts[1] || ''}`;
+
+      // Reset options & feedback
+      optionsContainerEl.innerHTML = "";
+      explanationBoxEl.style.display = "none";
+      explanationBoxEl.className = "explanation-box";
+      nextBtnEl.style.display = "none";
+
+      // Render Options
+      current.options.forEach((optionText, index) => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.innerHTML = `<span><b>${String.fromCharCode(65 + index)}.</b> ${optionText}</span>`;
+        button.onclick = () => selectOption(index);
+        optionsContainerEl.appendChild(button);
+      });
+    }
+
+    function selectOption(selectedIndex) {
+      if (answered) return;
+      answered = true;
+
+      const current = quizData[currentQuestion];
+      const buttons = optionsContainerEl.getElementsByClassName("option-btn");
+      const blankTarget = document.getElementById("blank-target");
+
+      blankTarget.textContent = current.options[selectedIndex];
+
+      if (selectedIndex === current.answer) {
+        score++;
+        buttons[selectedIndex].classList.add("correct");
+        explanationBoxEl.className = "explanation-box correct";
+        explanationBoxEl.innerHTML = current.explanation;
+      } else {
+        buttons[selectedIndex].classList.add("incorrect");
+        buttons[current.answer].classList.add("correct");
+        explanationBoxEl.className = "explanation-box incorrect";
+        explanationBoxEl.innerHTML = `<b>Incorrect.</b> ${current.explanation}`;
+      }
+
+      // Disable all option buttons
+      Array.from(buttons).forEach(btn => btn.disabled = true);
+
+      // Update score display & show explanation and next button
+      scoreCounterEl.textContent = `Score: ${score} / ${quizData.length}`;
+      explanationBoxEl.style.display = "block";
+
+      if (currentQuestion < quizData.length - 1) {
+        nextBtnEl.textContent = "Next Question →";
+      } else {
+        nextBtnEl.textContent = "View Results →";
+      }
+      nextBtnEl.style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      quizScreenEl.style.display = "none";
+      resultsScreenEl.style.display = "block";
+      finalScoreEl.textContent = `${score} / ${quizData.length}`;
+
+      const percentage = (score / quizData.length) * 100;
+      if (percentage === 100) {
+        feedbackMessageEl.textContent = "Excellent! You have a full mastery of nouns and noun equivalents in the subject position.";
+      } else if (percentage >= 60) {
+        feedbackMessageEl.textContent = "Good job! You understand the main principles of noun equivalents as subjects.";
+      } else {
+        feedbackMessageEl.textContent = "Keep practicing! Review the rules of noun phrases, gerunds, infinitives, and noun clauses.";
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      resultsScreenEl.style.display = "none";
+      quizScreenEl.style.display = "block";
+      loadQuestion();
+    }
+
+    // Initialize Quiz on load
+    loadQuestion();
+  </script>
+</body>
+</html>
